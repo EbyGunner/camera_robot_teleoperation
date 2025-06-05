@@ -1,0 +1,47 @@
+# MoveIt uses this configuration for controller management
+
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - manipulator_robot_one_controller
+    - manipulator_robot_two_controller
+    - gripper_robot_one_controller
+    - gripper_robot_two_controller
+
+  manipulator_robot_one_controller:
+    type: FollowJointTrajectory
+    joints:
+      - joint1_robot_1
+      - joint2_robot_1
+      - joint3_robot_1
+      - joint4_robot_1
+      - joint5_robot_1
+      - joint6_robot_1
+    action_ns: follow_joint_trajectory
+    default: true
+  manipulator_robot_two_controller:
+    type: FollowJointTrajectory
+    joints:
+      - joint1_robot_2
+      - joint2_robot_2
+      - joint3_robot_2
+      - joint4_robot_2
+      - joint5_robot_2
+      - joint6_robot_2
+    action_ns: follow_joint_trajectory
+    default: true
+  gripper_robot_one_controller:
+    type: GripperCommand
+    joints:
+      - left_gripper_joint_robot_1
+      - right_gripper_joint_robot_1
+    action_ns: gripper_cmd
+    default: true
+  gripper_robot_two_controller:
+    type: GripperCommand
+    joints:
+      - left_gripper_joint_robot_2
+      - right_gripper_joint_robot_2
+    action_ns: gripper_cmd
+    default: true
