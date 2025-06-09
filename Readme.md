@@ -1,0 +1,162 @@
+# Dual Arm Robot Teleoperation via Webcam Hand Tracking
+
+This ROS 2 project enables real-time control of two 6-DOF robotic arms using a standard webcam and your hands. The system mimics the motions of your **left** and **right** hands to control the **left** and **right** robotic arms respectively. The end-effectors follow the hand movements, and the grippers open or close based on the state of the respective hands (open or closed).
+
+This setup is ideal for remote manipulation, human-robot interaction experiments, or learning teleoperation and motion planning with ROS 2, MoveIt, and real-time perception.
+
+---
+
+## 📦 Repository
+
+**GitHub Link**: [https://github.com/EbyGunner/camera_robot_teleoperation.git](https://github.com/EbyGunner/camera_robot_teleoperation.git)
+
+---
+
+## 🛠️ Requirements
+
+- ROS 2 Humble
+- MoveIt 2
+- `ros2_control`
+- `ros2_controllers`
+- Python3 packages: `mediapipe`
+
+---
+
+## ✅ Installation Steps
+
+### 1. Setup a ROS 2 Humble Workspace
+
+```bash
+mkdir -p ~/teleop_ws/src
+cd ~/teleop_ws/src
+```
+---
+
+### 2. Clone the Repository
+
+⚠️ DO NOT create a sub-folder; clone the repository directly inside `src`.
+
+```bash
+git clone https://github.com/EbyGunner/camera_robot_teleoperation.git
+```
+---
+### 3. Install Dependencies
+Install required ROS 2 packages:
+```bash
+sudo apt update
+sudo apt install ros-humble-moveit ros-humble-ros2-control ros-humble-ros2-controllers
+```
+---
+### 4. Install Required Python Packages
+Local installation of mediapipe in project directory:
+
+To avoid installing mediapipe globally:
+```bash
+cd ~/teleop_ws/src/camera_robot_teleoperation/hand_tracking
+mkdir -p external_libraries
+pip3 install mediapipe --target=external_libraries
+```
+This will install `mediapipe` in the `hand_tracking/external_libraries` folder. The teleoperation script is already configured to import it from this local path.
+
+---
+### 5. Build the Workspace
+```bash
+cd ~/teleop_ws
+source /opt/ros/humble/setup.bash
+colcon build --symlink-install
+```
+---
+### 6. Source the Workspace
+```bash
+source ~/teleop_ws/install/setup.bash
+```
+---
+
+## 🚀 Running the Teleoperation System
+
+### 1. Launch the Robot Simulation (in RViz)
+
+Launch the robot simulation using:
+```bash
+ros2 launch sereact robot_main.launch.py
+```
+This will bring up two MoveIt-controlled arms with working joint_state_broadcasters and gripper controllers.
+
+---
+
+### 2. Start the Webcam Hand Tracker and Controller Node
+```bash
+ros2 launch robot_imitation robot_imitation.launch.py 
+```
+This node:
+
+* Uses your tracked hands messages.
+
+* Publishes end-effector goals based on hand poses.
+
+* Controls grippers based on hand openness (closed hand → close gripper, open hand → open gripper).
+---
+## ⚠️ Known Issues
+
+* Current Limitation: The robot does not yet follow the end-effector pose goals correctly via trajectory execution.
+
+This is due to a **TF transform issues**, which is being actively worked on. Motion planning works, but actual trajectory following might not reflect the target poses yet.
+
+
+##  📸 Webcam Setup Tips
+
+* Use a well-lit environment.
+
+* Place your webcam directly in front of your hands.
+
+* Keep your hands visible and inside the camera frame.
+
+* Avoid wearing gloves or accessories that obscure hand features.
+
+## 📂 Project Structure
+```bash
+camera_robot_teleoperation/
+├── hand_tracking
+│   ├── external_libraries
+│   ├── handtracking
+|   ├── launch
+|   ├── resource
+|   ├── test
+|   ├── CMakeLists.txt
+|   ├── package.xml
+|   ├── setup.cfg
+|   └── setup.py
+├── robot_imitation
+│   ├── launch
+│   ├── resource
+|   ├── robot_imitation
+|   ├── test
+|   ├── LICENSE
+|   ├── package.xml
+|   ├── setup.cfg
+|   └── setup.py
+├── robot_interfaces
+│   ├── msg
+|   ├── CMakeLists.txt
+|   └── package.xml
+├── robot_moveit
+│   ├── config
+│   ├── launch
+|   ├── .setup_assistant
+|   ├── CMakeLists.txt
+|   └── package.xml
+├── sereact
+│   ├── src
+│   ├── LICENSE
+|   ├── .setup_assistant
+|   ├── CMakeLists.txt
+|   └── package.xml
+├── .gitignore
+└── Readme.md
+```
+
+## 🧠 Future Improvements
+
+* Fix TF and trajectory following to enable true hand-to-end-effector mimicry.
+
+* Add adaptive control based on feedback.
