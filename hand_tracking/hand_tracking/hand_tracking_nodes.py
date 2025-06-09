@@ -14,7 +14,7 @@ from rclpy.executors import MultiThreadedExecutor
 
 # Add external library path
 SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src'))
-EXT_LIB_PATH = os.path.join(SRC_DIR, 'hand_tracking', 'external_libraries')
+EXT_LIB_PATH = os.path.join(SRC_DIR, 'camera_robot_teleoperation', 'hand_tracking', 'external_libraries')
 sys.path.insert(0, EXT_LIB_PATH)
 
 import mediapipe as mp
