@@ -1,8 +1,8 @@
 # Default initial positions for robot_one's ros2_control fake system
 
 initial_positions:
-  joint1_robot_1: 0.0
-  joint1_robot_2: 0.0
+  joint1_robot_1: 0.0000
+  joint1_robot_2: 0.0000
   joint2_robot_1: 0.5573
   joint2_robot_2: 0.5573
   joint3_robot_1: 0.4309
