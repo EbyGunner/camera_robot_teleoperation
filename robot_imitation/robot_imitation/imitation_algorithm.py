@@ -40,19 +40,21 @@ class HandToRobotController(Node):
     def initialize_parameters(self):
 
         self.declare_parameter('debug', False)
-        self.debug_param = self.get_parameter('debug').get_parameter_value().bool_value
+        self.debug_param = self.get_parameter('debug').value
+        if isinstance(self.debug_param, str):
+            self.debug_param = self.debug_param.lower() == 'true'
 
         self.declare_parameter('robot1_name', 'robot_one')
-        self.robot1_name = self.get_parameter('robot1_name').get_parameter_value()
-        self.declare_parameter('robot2_name', False)
-        self.robot2_name = self.get_parameter('robot2_name').get_parameter_value()
+        self.robot1_name = self.get_parameter('robot1_name').get_parameter_value().string_value
+        self.declare_parameter('robot2_name', 'robot_two')
+        self.robot2_name = self.get_parameter('robot2_name').get_parameter_value().string_value
 
         self.declare_parameter('planning_time', 5.0)
-        self.planning_time = self.get_parameter('planning_time').get_parameter_value()
+        self.planning_time = self.get_parameter('planning_time').get_parameter_value().double_value
         self.declare_parameter('velocity_scaling', 0.5)
-        self.velocity_scaling = self.get_parameter('velocity_scaling').get_parameter_value()
+        self.velocity_scaling = self.get_parameter('velocity_scaling').get_parameter_value().double_value
         self.declare_parameter('acceleration_scaling', 0.5)
-        self.acceleration_scaling = self.get_parameter('acceleration_scaling').get_parameter_value()
+        self.acceleration_scaling = self.get_parameter('acceleration_scaling').get_parameter_value().double_value
 
         self.joint_states = None
         

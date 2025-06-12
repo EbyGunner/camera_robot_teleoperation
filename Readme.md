@@ -95,6 +95,28 @@ This node:
 * Publishes end-effector goals based on hand poses.
 
 * Controls grippers based on hand openness (closed hand → close gripper, open hand → open gripper).
+
+#### Optional Launch Arguments
+You can customize the behavior of the teleoperation node with the following launch arguments:
+
+| Argument      | Description | Default     |
+| -----------   | ----------- | ----------- |
+| planning_time        | Allowed planning time in seconds       |5.0        |
+| velocity_scaling        | Velocity scaling factor (0.0–1.0)       |0.5        |
+| acceleration_scaling        | Acceleration scaling factor (0.0–1.0)       |0.5        |
+| world_frame        | World frame used for TF       |world        |
+| debug        | Enable debug logging output       |false        |
+
+Example: Enable Debug Mode
+```bash
+ros2 launch robot_imitation robot_imitation.launch.py debug:=true
+ 
+```
+Example: Set custom velocity and planning time
+```bash
+ros2 launch robot_imitation robot_imitation.launch.py velocity_scaling:=0.3 planning_time:=10.0 
+```
+
 ---
 ## ⚠️ Known Issues
 
@@ -103,19 +125,21 @@ This node:
 This is due to a **TF transform issues**, which is being actively worked on. Motion planning works, but actual trajectory following might not reflect the target poses yet.
 
 
-##  📸 Webcam Setup Tips
+##  📸 Webcam Setup
 
 * Use a well-lit environment.
 
 * Place your webcam directly in front of your hands.
 
-* Keep your hands visible and inside the camera frame.
+* Keep your hands movements within the camera frame.
 
 * Avoid wearing gloves or accessories that obscure hand features.
 
 ## 📂 Project Structure
 ```bash
 camera_robot_teleoperation/
+├── .devcontainer
+|   └── Dockerfile
 ├── hand_tracking
 │   ├── external_libraries
 │   ├── handtracking
@@ -159,4 +183,69 @@ camera_robot_teleoperation/
 
 * Fix TF and trajectory following to enable true hand-to-end-effector mimicry.
 
-* Add adaptive control based on feedback.
+* Introduce orientation of gripper based on hand orientation
+
+
+# Setting up Docker for ROS2 Humble
+
+This is the step by step instructions on how to create a ros2 humble docker image and container with host webcam and graphincal interface access and run the above program.
+
+Follow the instructions shown [here](https://docs.docker.com/engine/install/ubuntu/) to install docker in your system.
+
+## Creating docker ros2 humble image
+
+
+### 1. Create Dockerfile
+
+Create a file called `Dockerfile` and copy the contents from `.devcontainer/Dockerfile` into this file.
+
+---
+
+### 2. Create docker image
+
+Open a terminal in your machine and run the following command:
+
+```bash
+docker build -t {docker_image_name} {Dockerfile address}
+
+```
+Replace `{docker_image_name}` with a name of your choice and `{Dockerfile address}` with the address to your `Dockerfile`.
+
+note: `{Dockerfile address}` should be until the `Dockerfile` and not including it. That is, if the file is at `src/camera_robot_teleoperation/.devcontainer/Dockerfile`, the `{Dockerfile address}` should be `src/camera_robot_teleoperation/.devcontainer/`.
+
+---
+### 3. Create docker container
+Once the image is set up, docker needs access to your X server which can be granted using the following command:
+```bash
+xhost +local:docker
+```
+After the program is run, this can be reversed using the following command:
+```bash
+xhost -local:docker
+```
+Once the access is granted, the docker container can be created
+```bash
+docker run -it \
+  --name {container_name} \
+  --env="DISPLAY" \
+  --env="QT_X11_NO_MITSHM=1" \
+  --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
+  --device=/dev/video0:/dev/video0 \
+  --privileged \
+  {docker_image_name}
+```
+Where `{container_name}` should be replaced with the a name for the container and `{docker_image_name}` should be replaced with the image name set in the previous step. If the video device is not the webcam, replace the device number with the correct number.
+
+---
+### 4. Setting up the project
+The above step will start a terminal in the container and the steps for `Dual Arm Robot Teleoperation via Webcam Hand Tracking` can be followed. To exit from the container, press `ctrl + d`.
+
+## Container operations
+To start a new terminal in the container:
+```bash
+docker exec -it {container_name} /bin/bash
+```
+Once the container is closed, to restart the container, the following command can be used:
+```bash
+docker start -i {container_name}
+```

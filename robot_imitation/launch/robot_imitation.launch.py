@@ -1,6 +1,7 @@
 from launch import LaunchDescription
-from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
 
 def generate_launch_description():
     return LaunchDescription([
@@ -29,18 +30,19 @@ def generate_launch_description():
             default_value='false',
             description='Enable debug mode'
         ),
-        
+
         Node(
             package='robot_imitation',
             executable='imitation_algorithm',
             name='hand_to_robot_controller',
+            output='screen',
             parameters=[{
                 'robot1_name': 'robot_one',
                 'robot2_name': 'robot_two',
-                'planning_time': 5.0,
-                'velocity_scaling': 0.5,
-                'acceleration_scaling': 0.5,
-                'debug' : 'true'
+                'planning_time': LaunchConfiguration('planning_time'),
+                'velocity_scaling': LaunchConfiguration('velocity_scaling'),
+                'acceleration_scaling': LaunchConfiguration('acceleration_scaling'),
+                'debug': LaunchConfiguration('debug')
             }]
         )
     ])

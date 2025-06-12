@@ -191,18 +191,20 @@ class HandTrackingNode(Node):
                             msg.position.z = 0.0
                             break
                 else:
-                    scale = 0.1
+                    scale_x = 0.5
+                    scale_y = 0.5
+                    scale_z = 0.1
 
                     # Relative motion
                     origin_x, origin_y = self.initial_positions[hand_type]
-                    msg.position.x = (raw_position.x - origin_x) * scale
-                    msg.position.y = (raw_position.y - origin_y) * scale
+                    msg.position.x = (raw_position.x - origin_x) * scale_x
+                    msg.position.y = (raw_position.y - origin_y) * scale_y
 
                     for j, classification in enumerate(handedness_list):
                         if classification.classification[0].label.lower() == hand_type:
                             hand_landmarks = landmarks_list[j]
                             hand_size = self.detector.compute_hand_size(hand_landmarks)
-                            msg.position.z = (hand_size / self.initial_hand_sizes[hand_type]) * scale
+                            msg.position.z = (hand_size / self.initial_hand_sizes[hand_type]) * scale_z
                             break
             else:
                 # Hand not detected
