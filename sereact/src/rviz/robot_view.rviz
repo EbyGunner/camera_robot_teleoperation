@@ -182,6 +182,19 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /hand_tracking_video
       Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Marker
+      Namespaces:
+        {}
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /target_markers
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -228,25 +241,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 6.814720153808594
+      Distance: 3.757166862487793
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.06048574298620224
+        Y: 0.15550437569618225
+        Z: 0.18760883808135986
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.4253983497619629
+      Pitch: 0.38539886474609375
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.423583030700684
+      Yaw: 5.438563346862793
     Saved: ~
 Window Geometry:
   Displays:

@@ -4,7 +4,7 @@
   <name>robot_moveit</name>
   <version>0.3.0</version>
   <description>
-     An automatically generated package with all the configuration and launch files for using the robot_one with the MoveIt Motion Planning Framework
+     An automatically generated package with all the configuration and launch files for using the dual_arm_robot with the MoveIt Motion Planning Framework
   </description>
   <maintainer email="your.name@example.com">your name</maintainer>
 

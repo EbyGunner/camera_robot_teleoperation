@@ -35,13 +35,11 @@ moveit_simple_controller_manager:
     type: GripperCommand
     joints:
       - left_gripper_joint_robot_1
-      - right_gripper_joint_robot_1
     action_ns: gripper_cmd
     default: true
   gripper_robot_two_controller:
     type: GripperCommand
     joints:
       - left_gripper_joint_robot_2
-      - right_gripper_joint_robot_2
     action_ns: gripper_cmd
     default: true

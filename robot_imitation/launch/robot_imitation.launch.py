@@ -24,6 +24,11 @@ def generate_launch_description():
             default_value='world',
             description='World frame for TF transformations'
         ),
+        DeclareLaunchArgument(
+            'debug',
+            default_value='false',
+            description='Enable debug mode'
+        ),
         
         Node(
             package='robot_imitation',
@@ -34,7 +39,8 @@ def generate_launch_description():
                 'robot2_name': 'robot_two',
                 'planning_time': 5.0,
                 'velocity_scaling': 0.5,
-                'acceleration_scaling': 0.5
+                'acceleration_scaling': 0.5,
+                'debug' : 'true'
             }]
         )
     ])

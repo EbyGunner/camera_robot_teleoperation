@@ -233,22 +233,22 @@ class HandTrackingNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = HandTrackingNode()
-    executor = MultiThreadedExecutor()
-    executor.add_node(node)
-
-    # Signal handler function
-    def sigint_handler(sig, frame):
-        node.get_logger().info('Ctrl-C detected, shutting down...')
-        executor.shutdown()
-
-    # Set signal handler
-    signal.signal(signal.SIGINT, sigint_handler)
-
     try:
+        node = HandTrackingNode()
+        executor = MultiThreadedExecutor()
+        executor.add_node(node)
+
+        def sigint_handler(sig, frame):
+            node.get_logger().info('Ctrl-C detected, shutting down...')
+            node.destroy_node()
+            rclpy.try_shutdown()
+
+        signal.signal(signal.SIGINT, sigint_handler)
+
         executor.spin()
+    except KeyboardInterrupt:
+        pass
     finally:
-        node.destroy_node()
         if rclpy.ok():
             rclpy.shutdown()
 
