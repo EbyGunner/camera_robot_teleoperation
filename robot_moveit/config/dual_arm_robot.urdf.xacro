@@ -3,7 +3,7 @@
     <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
 
     <!-- Import dual_arm_robot urdf file -->
-    <xacro:include filename="$(find sereact)/src/description/robot.urdf.xacro" />
+    <xacro:include filename="$(find robot_main)/src/description/robot.urdf.xacro" />
 
     <!-- Import control_xacro -->
     <xacro:include filename="dual_arm_robot.ros2_control.xacro" />

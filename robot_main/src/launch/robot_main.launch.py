@@ -8,7 +8,6 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    package_path = get_package_share_directory('sereact')
     robot_moveit_path = get_package_share_directory('robot_moveit')
     hand_detector_path = get_package_share_directory('hand_tracking')
 

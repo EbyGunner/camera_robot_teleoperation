@@ -78,7 +78,7 @@ source ~/teleop_ws/install/setup.bash
 
 Launch the robot simulation using:
 ```bash
-ros2 launch sereact robot_main.launch.py
+ros2 launch robot_main robot_main.launch.py
 ```
 This will bring up two MoveIt-controlled arms with working joint_state_broadcasters and gripper controllers.
 
@@ -169,7 +169,7 @@ camera_robot_teleoperation/
 |   ├── .setup_assistant
 |   ├── CMakeLists.txt
 |   └── package.xml
-├── sereact
+├── robot_main
 │   ├── src
 │   ├── LICENSE
 |   ├── .setup_assistant
