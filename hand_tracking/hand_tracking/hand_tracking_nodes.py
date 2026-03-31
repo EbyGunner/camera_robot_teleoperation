@@ -13,6 +13,7 @@ import signal
 from rclpy.executors import MultiThreadedExecutor
 import numpy as np
 from scipy.spatial.transform import Rotation as R
+import threading
 
 # Add external library path
 SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'src'))
@@ -201,11 +202,16 @@ class HandTrackingNode(Node):
         self.detector = HandDetector()
         self.cap = cv2.VideoCapture("/dev/video0", cv2.CAP_V4L2)
 
+        self.data_lock = threading.Lock()
+
         # Initialize tracking variables
         self.initial_positions = {"left": None, "right": None}
         self.initial_orientations = {"left": None, "right": None}
         self.initial_hand_sizes = {"left": None, "right": None}
         self.latest_detected_hands = {"left": None, "right": None}
+        self.latest_landmarks_list = []
+        self.latest_handedness_list = []
+        self.frame_ready = False
 
         if not self.cap.isOpened():
             self.get_logger().error("Failed to open video device")
@@ -213,8 +219,8 @@ class HandTrackingNode(Node):
 
         self.get_logger().info('Hand Tracking Node started with orientation tracking')
 
-        # Timer for hand state messages (1 Hz)
-        self.hand_state_timer = self.create_timer(1.0, self.hand_state_timer_callback)
+        # Timer for hand state messages (10 Hz)
+        self.hand_state_timer = self.create_timer(0.1, self.hand_state_timer_callback)
         # Timer for video feed (10 Hz)
         self.video_timer = self.create_timer(0.1, self.video_timer_callback)
 
@@ -227,20 +233,19 @@ class HandTrackingNode(Node):
             return
 
         ret, frame = self.cap.read()
-        
         if not ret:
             self.get_logger().error("Failed to capture frame")
             return
 
         frame = cv2.flip(frame, 1)
         detected_hands, annotated_frame, landmarks_list, handedness_list = self.detector.detect_hands(frame)
-        
-        # Store the latest detection results
-        self.latest_detected_hands = detected_hands
-        self.latest_landmarks_list = landmarks_list or []
-        self.latest_handedness_list = handedness_list or []
 
-        # Publish annotated video
+        with self.data_lock:
+            self.latest_detected_hands = detected_hands
+            self.latest_landmarks_list = landmarks_list or []
+            self.latest_handedness_list = handedness_list or []
+            self.frame_ready = True
+
         try:
             ros_image = self.bridge.cv2_to_imgmsg(annotated_frame, "bgr8")
             ros_image.header.stamp = self.get_clock().now().to_msg()
@@ -249,13 +254,16 @@ class HandTrackingNode(Node):
             self.get_logger().error(f"Failed to convert and publish image: {str(e)}")
 
     def hand_state_timer_callback(self):
-        """Publish hand states at 1Hz using the latest detection results"""
+        """Publish hand states using the latest detection results"""
         if not self.running:
             return
 
-        detected_hands = self.latest_detected_hands
-        landmarks_list = self.latest_landmarks_list
-        handedness_list = self.latest_handedness_list
+        with self.data_lock:
+            if not self.frame_ready:
+                return
+            detected_hands = self.latest_detected_hands.copy()
+            landmarks_list = list(self.latest_landmarks_list)
+            handedness_list = list(self.latest_handedness_list)
 
         for hand_type in ['left', 'right']:
             msg = HandState()
@@ -307,7 +315,8 @@ class HandTrackingNode(Node):
                         if classification.classification[0].label.lower() == hand_type:
                             hand_landmarks = landmarks_list[j]
                             hand_size = self.detector.compute_hand_size(hand_landmarks)
-                            msg.position.z = (hand_size / self.initial_hand_sizes[hand_type]) * scale_z
+                            size_delta = (hand_size - self.initial_hand_sizes[hand_type]) / self.initial_hand_sizes[hand_type]
+                            msg.position.z = size_delta * scale_z
                             break
             else:
                 # Hand not detected - reset values

@@ -3,13 +3,12 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch_ros.actions import Node
-
 
 def generate_launch_description():
 
     robot_moveit_path = get_package_share_directory('robot_moveit')
     hand_detector_path = get_package_share_directory('hand_tracking')
+    robot_imitation_path = get_package_share_directory('robot_imitation')
 
     move_group_launch_robot_one = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -23,7 +22,14 @@ def generate_launch_description():
         )
     )
 
+    robot_imitation_node = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(robot_imitation_path, 'launch', 'robot_imitation.launch.py')
+        )
+    )
+
     return LaunchDescription([
         move_group_launch_robot_one,
         camera_hand_detector_node,
+        robot_imitation_node,
     ])

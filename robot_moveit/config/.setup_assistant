@@ -1,13 +1,13 @@
 moveit_setup_assistant_config:
   urdf:
-    package: sereact
+    package: robot_main
     relative_path: src/description/robot.urdf.xacro
   srdf:
     relative_path: config/dual_arm_robot.srdf
   package_settings:
-    author_name: your name
-    author_email: your.name@example.com
-    generated_timestamp: 1749726647
+    author_name: ""
+    author_email: ""
+    generated_timestamp: 1773327690
   control_xacro:
     command:
       - position

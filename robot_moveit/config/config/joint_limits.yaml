@@ -10,81 +10,81 @@ default_acceleration_scaling_factor: 0.1
 joint_limits:
   joint1_robot_1:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint1_robot_2:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint2_robot_1:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint2_robot_2:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint3_robot_1:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint3_robot_2:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint4_robot_1:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint4_robot_2:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint5_robot_1:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint5_robot_2:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint6_robot_1:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   joint6_robot_2:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   left_gripper_joint_robot_1:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   left_gripper_joint_robot_2:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   right_gripper_joint_robot_1:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0
   right_gripper_joint_robot_2:
     has_velocity_limits: true
-    max_velocity: 5.0
+    max_velocity: 10.0
     has_acceleration_limits: true
-    max_acceleration: 10.0
+    max_acceleration: 5.0

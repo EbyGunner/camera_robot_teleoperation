@@ -6,7 +6,7 @@
   <description>
      An automatically generated package with all the configuration and launch files for using the dual_arm_robot with the MoveIt Motion Planning Framework
   </description>
-  <maintainer email="your.name@example.com">your name</maintainer>
+  <maintainer email="ebyj23@gmail.com"></maintainer>
 
   <license>BSD-3-Clause</license>
 
@@ -14,7 +14,7 @@
   <url type="bugtracker">https://github.com/moveit/moveit2/issues</url>
   <url type="repository">https://github.com/moveit/moveit2</url>
 
-  <author email="your.name@example.com">your name</author>
+  <author email="ebyj23@gmail.com"></author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
@@ -36,11 +36,11 @@
   <exec_depend>moveit_ros_visualization</exec_depend>
   <exec_depend>moveit_ros_warehouse</exec_depend>
   <exec_depend>moveit_setup_assistant</exec_depend>
+  <exec_depend>robot_main</exec_depend>
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>rviz2</exec_depend>
   <exec_depend>rviz_common</exec_depend>
   <exec_depend>rviz_default_plugins</exec_depend>
-  <exec_depend>robot_main</exec_depend>
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>warehouse_ros_mongo</exec_depend>
   <exec_depend>xacro</exec_depend>

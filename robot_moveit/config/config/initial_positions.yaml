@@ -1,0 +1,17 @@
+# Default initial positions for dual_arm_robot's ros2_control fake system
+
+initial_positions:
+  joint1_robot_1: 0.0
+  joint1_robot_2: 0.0
+  joint2_robot_1: 0.4
+  joint2_robot_2: 0.4
+  joint3_robot_1: 0.4
+  joint3_robot_2: 0.4
+  joint4_robot_1: 0.4
+  joint4_robot_2: 0.4
+  joint5_robot_1: 0.4
+  joint5_robot_2: 0.4
+  joint6_robot_1: 1.57
+  joint6_robot_2: 1.57
+  left_gripper_joint_robot_1: 0
+  left_gripper_joint_robot_2: 0
