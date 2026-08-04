@@ -1,0 +1,25 @@
+services:
+  teleop:
+    build: .
+    image: camera-robot-teleoperation
+    container_name: teleop
+    # host networking + IPC: ROS 2 discovery and Fast DDS shared memory work
+    # across the container boundary, so host-side tools (ros2 topic echo,
+    # rqt, another RViz) can talk to the nodes inside.
+    network_mode: host
+    ipc: host
+    environment:
+      DISPLAY: ${DISPLAY}
+      QT_X11_NO_MITSHM: "1"
+      # LIBGL_ALWAYS_SOFTWARE: "1"   # uncomment if RViz opens black/garbled
+    devices:
+      - /dev/video0:/dev/video0      # webcam; if yours is /dev/video2, map it
+                                     # as /dev/video2:/dev/video0
+      - /dev/dri:/dev/dri            # Intel/AMD GPU for RViz + mediapipe EGL
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # Dev mode: uncomment to edit code on the host, then rebuild inside:
+      #   docker compose exec teleop bash -c ". /opt/ros/jazzy/setup.sh && colcon build"
+      # - .:/ws/src/camera_robot_teleoperation
+    stdin_open: true
+    tty: true

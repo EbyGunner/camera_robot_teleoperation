@@ -1,251 +1,172 @@
 # Dual Arm Robot Teleoperation via Webcam Hand Tracking
 
-This ROS 2 project enables real-time control of two 6-DOF robotic arms using a standard webcam and your hands. The system mimics the motions of your **left** and **right** hands to control the **left** and **right** robotic arms respectively. The end-effectors follow the hand movements, and the grippers open or close based on the state of the respective hands (open or closed).
+Control two 6-DOF robotic arms in real time using nothing but a standard
+webcam and your bare hands. Your **left** and **right** hands drive the
+**left** and **right** robots respectively. Both arms move
+**simultaneously** through a single collision-checked MoveIt plan, and
+making a fist closes the matching gripper.
 
-This setup is ideal for remote manipulation, human-robot interaction experiments, or learning teleoperation and motion planning with ROS 2, MoveIt, and real-time perception.
+Built on ROS 2, MoveIt 2, ros2_control, and MediaPipe. Ideal for learning
+teleoperation, motion planning, and real-time perception, or as a base for
+human–robot interaction experiments.
 
----
+## ✨ Features
 
-## 📦 Repository
-
-**GitHub Link**: [https://github.com/EbyGunner/camera_robot_teleoperation.git](https://github.com/EbyGunner/camera_robot_teleoperation.git)
-
----
+* **Markerless hand tracking** -- MediaPipe reads 21 landmarks per hand
+  from a single webcam; no gloves, controllers, or depth camera.
+* **Simultaneous dual-arm motion** -- both hands' targets are merged into
+  one goal for a combined 12-DOF planning group, so the arms plan and
+  execute together and are collision-checked *against each other*.
+* **Gesture grippers** -- fist closes, open hand opens; the passive finger
+  mirrors via a mimic joint so the full gripper tracks in RViz and TF.
+* **Safe relative mapping** -- hand motion is applied relative to where
+  your hand first appeared, clamped to a workspace box around the arm's
+  reference pose; losing a hand resets its reference.
+* **Robust planning pipeline** -- freshest-target batching, per-arm
+  re-plan gates, and a watchdog that cancels stuck goals.
+* **Modular, testable code** -- the mapping, batching, and gesture logic
+  are pure Python modules with no ROS imports, unit-testable on their own.
+* **One-command Docker setup** -- the entire stack (ROS 2 + MoveIt +
+  MediaPipe + this workspace) builds into a single container.
 
 ## 🛠️ Requirements
 
-- ROS 2 Humble
-- MoveIt 2
-- `ros2_control`
-- `ros2_controllers`
-- Python3 packages: `mediapipe`
+* Linux host with a webcam (`/dev/video0` by default)
+* **Docker route:** just Docker Engine, nothing else, not even ROS
+* **Native route:** ROS 2 Jazzy (the tested distro), MoveIt 2,
+  ros2_control/ros2_controllers, Python 3 with `mediapipe`
 
----
-
-## ✅ Installation Steps
-
-### 1. Setup a ROS 2 Humble Workspace
-
-```bash
-mkdir -p ~/teleop_ws/src
-cd ~/teleop_ws/src
-```
----
-
-### 2. Clone the Repository
-
-⚠️ DO NOT create a sub-folder; clone the repository directly inside `src`.
+## 🐳 Quick Start with Docker (recommended)
 
 ```bash
 git clone https://github.com/EbyGunner/camera_robot_teleoperation.git
+cd camera_robot_teleoperation
+xhost +local:                  # allow the container to open RViz
+docker compose up --build      # first build takes a while; cached afterwards
 ```
----
-### 3. Install Dependencies
-Install required ROS 2 packages:
-```bash
-sudo apt update
-sudo apt install ros-humble-moveit ros-humble-ros2-control ros-humble-ros2-controllers
-```
----
-### 4. Install Required Python Packages
-Local installation of mediapipe in project directory:
 
-To avoid installing mediapipe globally:
-```bash
-cd ~/teleop_ws/src/camera_robot_teleoperation/hand_tracking
-mkdir -p external_libraries
-pip3 install mediapipe --target=external_libraries
-```
-This will install `mediapipe` in the `hand_tracking/external_libraries` folder. The teleoperation script is already configured to import it from this local path.
+RViz opens with both arms; step in front of the camera and they follow
+your hands. `Ctrl-C` stops everything, and `xhost -local:` revokes the
+display access again.
 
----
-### 5. Build the Workspace
+Useful extras:
+
+```bash
+docker compose exec teleop bash          # second shell inside the container
+ros2 topic echo /left_hand_state         # works from the HOST too (host networking)
+```
+
+Camera on a different index, black RViz window, NVIDIA GPUs, and a
+dev-mode source mount are all covered in [DOCKER.md](DOCKER.md).
+
+## ✅ Native Installation
+
+```bash
+mkdir -p ~/teleop_ws/src && cd ~/teleop_ws/src
+git clone https://github.com/EbyGunner/camera_robot_teleoperation.git   # directly inside src, no sub-folder
+cd ~/teleop_ws
+sudo apt update && rosdep update
+rosdep install --from-paths src --ignore-src -y --skip-keys "warehouse_ros_mongo opencv"
+sudo apt install ros-jazzy-moveit ros-jazzy-ros2-control ros-jazzy-ros2-controllers ros-jazzy-gripper-controllers
+```
+
+Install MediaPipe (pick one):
+
+```bash
+pip3 install --break-system-packages mediapipe          # simplest
+# or, to keep it out of the system Python:
+cd src/camera_robot_teleoperation/hand_tracking
+mkdir -p external_libraries && pip3 install mediapipe --target=external_libraries
+# or point the loader anywhere: export HAND_TRACKING_MEDIAPIPE_DIR=/path/to/site-packages
+```
+
+Build and run:
+
 ```bash
 cd ~/teleop_ws
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 colcon build --symlink-install
+source install/setup.bash
 ```
----
-### 6. Source the Workspace
-```bash
-source ~/teleop_ws/install/setup.bash
-```
----
 
-## 🚀 Running the Teleoperation System
+## 🚀 Running
 
-### 1. Launch the Robot Simulation (in RViz)
+One command brings up everything: MoveIt, controllers, RViz, the hand
+tracker, and the teleoperation node:
 
-Launch the robot simulation using:
 ```bash
 ros2 launch robot_main robot_main.launch.py
 ```
-This will bring up two MoveIt-controlled arms with working joint_state_broadcasters and gripper controllers.
 
----
+### 🖐️ Controls
 
-### 2. Start the Webcam Hand Tracker and Controller Node
-```bash
-ros2 launch robot_imitation robot_imitation.launch.py 
-```
-This node:
+| You do | Robot does |
+| ------ | ---------- |
+| Show a hand to the camera | Matching arm captures its reference pose ("reference pose set" in the log) |
+| Move the hand left/right | End effector moves along the arm's y axis |
+| Move the hand up/down | End effector moves along z |
+| Move **both** hands | **Both arms plan and move simultaneously** |
+| Make a fist / open the hand | Gripper closes / opens |
+| Hide the hand | That arm's reference resets; it re-captures when the hand returns |
 
-* Uses your tracked hands messages.
+Motion is clamped to a box (default ±8 cm) around each arm's reference
+pose. Depth control (hand toward/away from camera) exists but ships
+disabled; monocular depth from hand size is noisy (`scale_x`).
 
-* Publishes end-effector goals based on hand poses.
+### Launch arguments
 
-* Controls grippers based on hand openness (closed hand → close gripper, open hand → open gripper).
+| Argument | Description | Default |
+| -------- | ----------- | ------- |
+| `planning_time` | Allowed planning time in seconds | `5.0` |
+| `velocity_scaling` | Velocity scaling factor (0.0–1.0) | `0.5` |
+| `acceleration_scaling` | Acceleration scaling factor (0.0–1.0) | `0.5` |
+| `workspace_extent` | Half-size (m) of the teleop box | `0.08` |
+| `use_orientation_constraint` | Set `false` when using position-only IK | `true` |
+| `diagnostic_mode` | `''` = follow hands; `exact_current_pose` / `fixed_offset` for planner debugging | `''` |
+| `debug` | Verbose logging | `false` |
 
-#### Optional Launch Arguments
-You can customize the behavior of the teleoperation node with the following launch arguments:
+Many more knobs (`scale_x/y/z`, `merge_window`, `plan_cooldown`,
+`position_threshold`, gripper positions, …) are ROS parameters on the
+`hand_to_robot_controller` node; see `robot_imitation/robot_imitation/params.py`.
 
-| Argument      | Description | Default     |
-| -----------   | ----------- | ----------- |
-| planning_time        | Allowed planning time in seconds       |5.0        |
-| velocity_scaling        | Velocity scaling factor (0.0–1.0)       |0.5        |
-| acceleration_scaling        | Acceleration scaling factor (0.0–1.0)       |0.5        |
-| world_frame        | World frame used for TF       |world        |
-| debug        | Enable debug logging output       |false        |
+## 📸 Webcam Tips
 
-Example: Enable Debug Mode
-```bash
-ros2 launch robot_imitation robot_imitation.launch.py debug:=true
- 
-```
-Example: Set custom velocity and planning time
-```bash
-ros2 launch robot_imitation robot_imitation.launch.py velocity_scaling:=0.3 planning_time:=10.0 
-```
+* Use a well-lit environment and face the camera directly.
+* Keep both hands fully inside the frame.
+* Avoid gloves or accessories that obscure hand features.
 
----
-## ⚠️ Known Issues
-
-* Current Limitation: The robot does not yet follow the end-effector pose goals correctly via trajectory execution.
-
-This is due to a **TF transform issues**, which is being actively worked on. Motion planning works, but actual trajectory following might not reflect the target poses yet.
-
-
-##  📸 Webcam Setup
-
-* Use a well-lit environment.
-
-* Place your webcam directly in front of your hands.
-
-* Keep your hands movements within the camera frame.
-
-* Avoid wearing gloves or accessories that obscure hand features.
-
-## 📂 Project Structure
-```bash
-camera_robot_teleoperation/
-├── .devcontainer
-|   └── Dockerfile
-├── hand_tracking
-│   ├── external_libraries
-│   ├── handtracking
-|   ├── launch
-|   ├── resource
-|   ├── test
-|   ├── CMakeLists.txt
-|   ├── package.xml
-|   ├── setup.cfg
-|   └── setup.py
-├── robot_imitation
-│   ├── launch
-│   ├── resource
-|   ├── robot_imitation
-|   ├── test
-|   ├── LICENSE
-|   ├── package.xml
-|   ├── setup.cfg
-|   └── setup.py
-├── robot_interfaces
-│   ├── msg
-|   ├── CMakeLists.txt
-|   └── package.xml
-├── robot_moveit
-│   ├── config
-│   ├── launch
-|   ├── .setup_assistant
-|   ├── CMakeLists.txt
-|   └── package.xml
-├── robot_main
-│   ├── src
-│   ├── LICENSE
-|   ├── .setup_assistant
-|   ├── CMakeLists.txt
-|   └── package.xml
-├── .gitignore
-└── Readme.md
-```
-
-## 🧠 Future Improvements
-
-* Fix TF and trajectory following to enable true hand-to-end-effector mimicry.
-
-* Introduce orientation of gripper based on hand orientation
-
-
-# Setting up Docker for ROS2 Humble
-
-This is the step by step instructions on how to create a ros2 humble docker image and container with host webcam and graphincal interface access and run the above program.
-
-Follow the instructions shown [here](https://docs.docker.com/engine/install/ubuntu/) to install docker in your system.
-
-## Creating docker ros2 humble image
-
-
-### 1. Create Dockerfile
-
-Create a file called `Dockerfile` and copy the contents from `.devcontainer/Dockerfile` into this file.
-
----
-
-### 2. Create docker image
-
-Open a terminal in your machine and run the following command:
-
-```bash
-docker build -t {docker_image_name} {Dockerfile address}
+## 🧩 How It Works
 
 ```
-Replace `{docker_image_name}` with a name of your choice and `{Dockerfile address}` with the address to your `Dockerfile`.
+webcam ─▶ MediaPipe (hand_tracking) ─▶ /left_hand_state, /right_hand_state
+       ─▶ imitation node (robot_imitation): relative mapping + target merging
+       ─▶ MoveIt 2 /move_action: one collision-checked plan (single arm or
+          combined 12-DOF group) ─▶ ros2_control trajectory + gripper
+          controllers ─▶ RViz
+```
 
-note: `{Dockerfile address}` should be until the `Dockerfile` and not including it. That is, if the file is at `src/camera_robot_teleoperation/.devcontainer/Dockerfile`, the `{Dockerfile address}` should be `src/camera_robot_teleoperation/.devcontainer/`.
+| Package | Role |
+| ------- | ---- |
+| `hand_tracking` | Webcam capture, MediaPipe detection, gesture + relative-pose logic |
+| `robot_interfaces` | Custom `HandState` message |
+| `robot_imitation` | Hand→target mapping, goal batching, MoveIt + gripper clients |
+| `robot_moveit` | MoveIt configuration (URDF/SRDF, controllers, RViz) |
+| `robot_main` | Robot description and the top-level launch |
 
----
-### 3. Create docker container
-Once the image is set up, docker needs access to your X server which can be granted using the following command:
-```bash
-xhost +local:docker
-```
-After the program is run, this can be reversed using the following command:
-```bash
-xhost -local:docker
-```
-Once the access is granted, the docker container can be created
-```bash
-docker run -it \
-  --name {container_name} \
-  --env="DISPLAY" \
-  --env="QT_X11_NO_MITSHM=1" \
-  --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-  --device=/dev/video0:/dev/video0 \
-  --privileged \
-  {docker_image_name}
-```
-Where `{container_name}` should be replaced with the a name for the container and `{docker_image_name}` should be replaced with the image name set in the previous step. If the video device is not the webcam, replace the device number with the correct number.
+## ⚠️ Current Limitations
 
----
-### 4. Setting up the project
-The above step will start a terminal in the container and the steps for `Dual Arm Robot Teleoperation via Webcam Hand Tracking` can be followed. To exit from the container, press `ctrl + d`.
+* **Stepwise motion**: the pipeline is plan-and-execute (~1 s per
+  motion), not continuous servoing; fresh targets queue while a plan runs.
+* **Two control axes per hand**: depth is disabled by default (noisy
+  monocular estimate), and wrist orientation is tracked but not yet
+  mapped to the robot.
+* **Lighting sensitivity**: poor light degrades detection; a lost hand
+  pauses that arm until it reappears.
 
-## Container operations
-To start a new terminal in the container:
-```bash
-docker exec -it {container_name} /bin/bash
-```
-Once the container is closed, to restart the container, the following command can be used:
-```bash
-docker start -i {container_name}
-```
+## 🔧 Project Notes
+
+* [DOCKER.md](DOCKER.md): container details and troubleshooting.
+
+## 📄 License
+
+Apache-2.0

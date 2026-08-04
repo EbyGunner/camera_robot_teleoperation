@@ -1,0 +1,7 @@
+cat > .dockerignore << 'EOF'
+.git
+log/
+**/__pycache__/
+hand_tracking/external_libraries/
+*.zip
+EOF
