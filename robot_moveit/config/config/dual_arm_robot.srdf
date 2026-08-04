@@ -29,6 +29,14 @@
         <link name="link1_robot_2"/>
         <link name="base_link_robot_2"/>
     </group>
+    <!-- PATCH: combined 12-DOF group so one MoveGroup request can plan and
+         execute BOTH arms simultaneously (move_group runs a single motion
+         goal at a time, so per-arm goals can only ever alternate). Goal
+         sampling uses each subgroup's KDL solver automatically. -->
+    <group name="both_manipulators">
+        <group name="manipulator_robot_one"/>
+        <group name="manipulator_robot_two"/>
+    </group>
     <group name="gripper_robot_one">
         <joint name="right_gripper_joint_robot_1"/>
         <joint name="left_gripper_joint_robot_1"/>

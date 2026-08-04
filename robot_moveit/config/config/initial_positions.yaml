@@ -1,17 +1,22 @@
-# Default initial positions for dual_arm_robot's ros2_control fake system
-
+# PATCH: new home pose for the fixed z,y,y,z,y,z arm.
+#
+# The old home (0, 0.4, 0.4, 0.4, 0.4, 1.57) left the arm nearly fully
+# stretched (~5 mm of outward reach margin), so many teleop targets in the
+# +-8 cm box were unreachable. This pose parks the end effector at roughly
+# (0.45, 0, 0.42) in each arm's base frame with a comfortable margin in
+# every direction - verified so the whole default teleop box plans.
 initial_positions:
   joint1_robot_1: 0.0
+  joint2_robot_1: 0.3
+  joint3_robot_1: 1.1
+  joint4_robot_1: 0.0
+  joint5_robot_1: -0.5
+  joint6_robot_1: 0.0
+  left_gripper_joint_robot_1: 0.0
   joint1_robot_2: 0.0
-  joint2_robot_1: 0.4
-  joint2_robot_2: 0.4
-  joint3_robot_1: 0.4
-  joint3_robot_2: 0.4
-  joint4_robot_1: 0.4
-  joint4_robot_2: 0.4
-  joint5_robot_1: 0.4
-  joint5_robot_2: 0.4
-  joint6_robot_1: 1.57
-  joint6_robot_2: 1.57
-  left_gripper_joint_robot_1: 0
-  left_gripper_joint_robot_2: 0
+  joint2_robot_2: 0.3
+  joint3_robot_2: 1.1
+  joint4_robot_2: 0.0
+  joint5_robot_2: -0.5
+  joint6_robot_2: 0.0
+  left_gripper_joint_robot_2: 0.0

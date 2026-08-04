@@ -107,6 +107,26 @@
                 <state_interface name="velocity"/>
             </joint>
 
+            <!-- PATCH: right fingers as mimic joints so the
+                 joint_state_broadcaster publishes them (valid TF for the right
+                 finger links, no MoveIt incomplete-state warnings).
+                 The mimic relationship itself lives in the URDF <mimic> tag on
+                 these joints; ros2_control (Iron/Jazzy and newer) parses that
+                 tag directly and REQUIRES activated mimic joints to have no
+                 command interfaces - state interfaces only. mock hardware then
+                 fills their position/velocity from the mimicked joint.
+                 (On Humble only, mimic was configured here instead, via
+                 <param name="mimic">left_gripper_joint_robot_N</param> and
+                 <param name="multiplier">1</param>.) -->
+            <joint name="right_gripper_joint_robot_1">
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+            </joint>
+            <joint name="right_gripper_joint_robot_2">
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+            </joint>
+
         </ros2_control>
     </xacro:macro>
 </robot>
