@@ -1,8 +1,7 @@
 """Current end-effector pose lookup via TF.
 
 Non-blocking: lookups either succeed against the buffer immediately or
-return None (the 10 Hz hand stream retries naturally). The original code
-blocked callbacks for up to 1 s per lookup.
+return None (the 10 Hz hand stream retries naturally). 
 """
 
 from typing import Optional, Tuple

@@ -121,11 +121,6 @@
     <parent link="link3_robot_1"/>
     <child link="link4_robot_1"/>
     <origin xyz="0 0 0.19" rpy="0 0 0"/>
-    <!-- PATCH: was "0 1 0". With axes z,y,y,y,y,z the arm only spans a 5-D pose
-         manifold (position and tool axis always coplanar with the base z-axis),
-         so full 6D IK goals are unsolvable. Making joint4 a forearm roll (z)
-         yields a z,y,y,z,y,z structure: articulated arm + roll-pitch-roll wrist,
-         a proper 6-DOF manipulator. -->
     <axis xyz="0 0 1"/>
     <limit effort="10" velocity="1.0" lower="-3.14" upper="3.14"/>
   </joint>
@@ -249,9 +244,6 @@
     <child link="right_finger_robot_1"/>
     <origin xyz="0.067 0 0.02" rpy="0 0 0"/>
     <axis xyz="-1 0 0"/>
-    <!-- PATCH: right finger mirrors the left one. Combined with the mimic entry in
-         the ros2_control xacro, this puts the joint in /joint_states so its TF
-         exists and MoveIt stops warning about an incomplete robot state. -->
     <mimic joint="left_gripper_joint_robot_1" multiplier="1.0" offset="0.0"/>
     <limit effort="10" velocity="1.0" lower="0.0" upper="0.06"/>
     <mimic joint="left_gripper_joint_robot_1" multiplier="1" offset="0"/>
@@ -488,9 +480,6 @@
     <child link="right_finger_robot_2"/>
     <origin xyz="0.067 0 0.02" rpy="0 0 0"/>
     <axis xyz="-1 0 0"/>
-    <!-- PATCH: right finger mirrors the left one. Combined with the mimic entry in
-         the ros2_control xacro, this puts the joint in /joint_states so its TF
-         exists and MoveIt stops warning about an incomplete robot state. -->
     <mimic joint="left_gripper_joint_robot_2" multiplier="1.0" offset="0.0"/>
     <limit effort="10" velocity="1.0" lower="0.0" upper="0.06"/>
     <mimic joint="left_gripper_joint_robot_2" multiplier="1" offset="0"/>

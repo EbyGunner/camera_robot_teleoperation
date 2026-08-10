@@ -1,0 +1,28 @@
+# Controllers visible to the /robot_two move_group instance ONLY.
+# See moveit_controllers_robot_one.yaml for the full rationale.
+
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - manipulator_robot_two_controller
+    - gripper_robot_two_controller
+
+  manipulator_robot_two_controller:
+    type: FollowJointTrajectory
+    joints:
+      - joint1_robot_2
+      - joint2_robot_2
+      - joint3_robot_2
+      - joint4_robot_2
+      - joint5_robot_2
+      - joint6_robot_2
+    action_ns: follow_joint_trajectory
+    default: true
+
+  gripper_robot_two_controller:
+    type: GripperCommand
+    joints:
+      - left_gripper_joint_robot_2
+    action_ns: gripper_cmd
+    default: true

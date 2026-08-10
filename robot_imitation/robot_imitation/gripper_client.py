@@ -1,9 +1,4 @@
 """Non-blocking gripper control for both arms.
-
-The original code called wait_for_server(1.0) inside the hand callback,
-stalling the whole (mutually exclusive) callback group for up to a second
-per message. Here readiness is checked with server_is_ready(); if the
-server is not up yet we simply retry on the next state change.
 """
 
 from control_msgs.action import GripperCommand

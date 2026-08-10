@@ -1,0 +1,45 @@
+# Controllers visible to the /robot_one move_group instance ONLY.
+#
+# The original moveit_controllers.yaml (still used by
+# spawn_controllers.launch.py to spawn all four controllers on the single
+# global controller_manager) is left untouched. This file exists so that
+# each namespaced move_group claims only its own arm: if both instances
+# listed all four controllers they would both accept trajectories for
+# both arms and the TrajectoryExecutionManagers would race.
+#
+# The controller names below are plain/relative. move_group runs in the
+# /robot_one namespace, so its action clients resolve to
+#   /robot_one/manipulator_robot_one_controller/follow_joint_trajectory
+# and move_group_ns.launch.py remaps them back out to the global
+# controllers. It derives those remaps by parsing THIS file, so keeping
+# controller_names and action_ns in sync here is all that is required.
+#
+# moveit_manage_controllers is forced to false in move_group_ns.launch.py:
+# two move_group instances share one controller_manager, so neither may
+# activate/deactivate controllers without stepping on the other arm.
+
+moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - manipulator_robot_one_controller
+    - gripper_robot_one_controller
+
+  manipulator_robot_one_controller:
+    type: FollowJointTrajectory
+    joints:
+      - joint1_robot_1
+      - joint2_robot_1
+      - joint3_robot_1
+      - joint4_robot_1
+      - joint5_robot_1
+      - joint6_robot_1
+    action_ns: follow_joint_trajectory
+    default: true
+
+  gripper_robot_one_controller:
+    type: GripperCommand
+    joints:
+      - left_gripper_joint_robot_1
+    action_ns: gripper_cmd
+    default: true
